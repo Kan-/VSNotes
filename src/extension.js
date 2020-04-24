@@ -1,14 +1,14 @@
 const vscode = require('vscode');
 
-const {newNote, newNoteInWorkspace} = require('./src/newNote');
-const listNotes = require('./src/listNotes');
-const listTags = require('./src/listTags')
-const setupNotes = require('./src/setupNotes');
-const VSNotesTreeView = require('./src/treeView');
-const commitPush = require('./src/commitPush');
-const pull = require('./src/pull');
-const search = require('./src/search');
-const utils = require('./src/utils');
+const {newNote, newNoteInWorkspace} = require('./newNote');
+const listNotes = require('./listNotes');
+const listTags = require('./listTags')
+const setupNotes = require('./setupNotes');
+const VSNotesTreeView = require('./treeView');
+const commitPush = require('./commitPush');
+const pull = require('./pull');
+const search = require('./search');
+const utils = require('./utils');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
