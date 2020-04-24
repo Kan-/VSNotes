@@ -62,6 +62,7 @@ async function createNote({ noteFolder, template }) {
   const defaultNoteName = config.get('defaultNoteName');
   const tokens = config.get('tokens');
   const noteTitleConvertSpaces = config.get('noteTitleConvertSpaces');
+  const noteTitleConvertToLowerCase = config.get('noteTitleConvertToLowerCase');
 
   const noteTitles = config.get('additionalNoteTitles');
   let noteTitle = config.get('defaultNoteTitle');
@@ -94,7 +95,10 @@ async function createNote({ noteFolder, template }) {
       noteName = defaultNoteName
     }
 
-    let fileName = replaceTokens(noteTitle, noteName, tokens);
+    const noteNameInFile = noteTitleConvertToLowerCase
+      ? noteName.toLocaleLowerCase()
+      : noteName;
+    let fileName = replaceTokens(noteTitle, noteNameInFile, tokens);
 
     if (noteTitleConvertSpaces != null) {
       fileName = fileName.replace(/\s/g, noteTitleConvertSpaces);

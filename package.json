@@ -128,6 +128,11 @@
                     "default": "_",
                     "description": "Automatically convert blank spaces in title to character. To disable set to `null`."
                 },
+                "vsnotes.noteTitleConvertToLowerCase": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Automatically convert title to lower case."
+                },
                 "vsnotes.templates": {
                     "type": "array",
                     "items": {
