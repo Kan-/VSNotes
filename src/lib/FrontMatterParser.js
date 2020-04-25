@@ -20,4 +20,4 @@ class FrontMatterParser {
   }
 }
 
-module.exports = FrontMatterParser
+module.exports = FrontMatterParser;
