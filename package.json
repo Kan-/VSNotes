@@ -281,7 +281,8 @@
     "scripts": {
         "compile": "tsc -p ./",
         "lint": "eslint ./src && tslint -p ./",
-        "pretest": "npm run compile",
+        "configureTestWorkspace": "node ./src/test/set-workspace-settings.js",
+        "pretest": "npm run compile && npm run configureTestWorkspace",
         "test": "node ./out/test/runTest.js",
         "watch": "tsc --watch -p ./"
     },

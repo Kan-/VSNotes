@@ -21,6 +21,13 @@
 			"label": "npm: watch",
 			"detail": "tsc --watch -p ./",
 			"isBackground": true
+		},
+		{
+			"type": "npm",
+			"script": "configureTestWorkspace",
+			"problemMatcher": [],
+			"label": "npm: configureTestWorkspace",
+			"detail": "node ./src/test/set-workspace-settings.js"
 		}
 	]
 }

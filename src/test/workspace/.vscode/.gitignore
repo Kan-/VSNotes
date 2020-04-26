@@ -1,0 +1,3 @@
+# Workspace settings are generated before running tests so that the absolute path of the notes can be set to this
+# directory's parent.
+settings.json
