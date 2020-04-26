@@ -5,6 +5,9 @@ import Note from '../../util/Note';
 
 const Notes = require('../../../lib/Notes');
 
+const TODAY = today();
+const YESTERDAY = yesterday();
+
 suite('Notes', () => {
 
   suite('Sorting and limiting', () => {
@@ -30,20 +33,20 @@ suite('Notes', () => {
     });
 
     test('Sorts by last modification time', () => {
-      const notes = new Notes([{ fileLastModifiedAt: yesterday() }, { fileLastModifiedAt: today() }])
+      const notes = new Notes([{ fileLastModifiedAt: YESTERDAY }, { fileLastModifiedAt: TODAY }])
 
       expect(notes.sortByFileLastModifiedAt().get()).to.deep.equal([
-        { fileLastModifiedAt: today() },
-        { fileLastModifiedAt: yesterday() }]);
+        { fileLastModifiedAt: TODAY },
+        { fileLastModifiedAt: YESTERDAY }]);
     });
 
     test('Sorting modifies the notes in place, which may be unexpected', () => {
-      const notes = new Notes([{ fileLastModifiedAt: yesterday() }, { fileLastModifiedAt: today() }])
+      const notes = new Notes([{ fileLastModifiedAt: YESTERDAY }, { fileLastModifiedAt: TODAY }])
 
       notes.sortByFileLastModifiedAt();
       expect(notes.get()).to.deep.equal([
-        { fileLastModifiedAt: today() },
-        { fileLastModifiedAt: yesterday() }]);
+        { fileLastModifiedAt: TODAY },
+        { fileLastModifiedAt: YESTERDAY }]);
     });
   });
 
