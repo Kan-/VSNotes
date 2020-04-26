@@ -43,6 +43,16 @@ class Notes {
     return new Notes(this.notes.filter(note => path.dirname(note.fileRelativePath) === subdirectory));
   }
 
+  allTags() {
+    const tags = new Set();
+    this.notes.forEach(note => note.tags.forEach(tags.add, tags));
+    return Array.from(tags).sort();
+  }
+
+  withTag(tag) {
+    return new Notes([...new Set(this.notes.filter(note => note.tags.includes(tag)))]);
+  }
+
   _removeFalsyValuesFrom(array) {
     return array.filter(Boolean);
   }

@@ -7,7 +7,7 @@ const Notes = require('../../../lib/Notes');
 
 suite('Notes', () => {
 
-  suite('Sorting and filtering', () => {
+  suite('Sorting and limiting', () => {
     test('Returns a note', () => {
       const notes = new Notes([{ filePath: 'note1' }])
 
@@ -186,6 +186,85 @@ suite('Notes', () => {
         note('parent', 'subdir', 'note2.md')]);
     })
   })
+
+  suite('Filtering by tags', () => {
+    test('Returns no notes if no tag is specified', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag')]);
+      expect(notes.withTag().get()).to.deep.equal([]);
+    })
+
+    test('Returns no notes if an undefined tag specified', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag')]);
+      expect(notes.withTag(undefined).get()).to.deep.equal([]);
+    })
+
+    test('Returns notes tagged with a specific tag, no notes', () => {
+      const notes = new Notes([]);
+      expect(notes.withTag('tag').get()).to.deep.equal([]);
+    })
+
+    test('Returns notes tagged with a specific tag, one matching tag', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag')]);
+      expect(notes.withTag('tag').get()).to.deep.equal([taggedNote('note.md', 'tag')]);
+    })
+
+    test('Returns notes tagged with a specific tag, one non-matching tag', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag')]);
+      expect(notes.withTag('otherTag').get()).to.deep.equal([]);
+    })
+
+    test('Returns notes tagged with a specific tag, multiple tags, none matching', () => {
+      const notes = new Notes([taggedNote('note1.md', 'tag1'), taggedNote('note2.md', 'tag2')]);
+      expect(notes.withTag('tag').get()).to.deep.equal([]);
+    })
+
+    test('Returns notes tagged with a specific tag, multiple tags, one matching', () => {
+      const notes = new Notes([taggedNote('note1.md', 'tag1'), taggedNote('note2.md', 'tag2')]);
+      expect(notes.withTag('tag1').get()).to.deep.equal([taggedNote('note1.md', 'tag1')]);
+    })
+
+    test('Returns notes tagged with a specific tag, multiple tags, multiple matching', () => {
+      const notes = new Notes([taggedNote('note1.md', 'tag'), taggedNote('note2.md', 'tag')]);
+      expect(notes.withTag('tag').get()).to.deep.equal([taggedNote('note1.md', 'tag'), taggedNote('note2.md', 'tag')]);
+    })
+  })
+
+  suite('Getting all tags', () => {
+    test('Returns no tags if there are no notes', () => {
+      const notes = new Notes([]);
+      expect(notes.allTags()).to.be.empty;
+    })
+
+    test('Returns no tags if there are notes with no tags', () => {
+      const notes = new Notes([taggedNote('note1.md'), taggedNote('note2.md')]);
+      expect(notes.allTags()).to.be.empty;
+    })
+
+    test('Returns one tag from one note', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag')]);
+      expect(notes.allTags()).to.deep.equal(['tag']);
+    })
+
+    test('Returns one tag from multiple notes with the same tag', () => {
+      const notes = new Notes([taggedNote('note1.md', 'tag'), taggedNote('note2.md', 'tag')]);
+      expect(notes.allTags()).to.deep.equal(['tag']);
+    })
+
+    test('Returns multiple tags from multiple notes', () => {
+      const notes = new Notes([taggedNote('note1.md', 'tag1', 'tag2'), taggedNote('note2.md', 'tag1', 'tag2')]);
+      expect(notes.allTags()).to.deep.equal(['tag1', 'tag2']);
+    })
+
+    test('Returns multiple tags from one note', () => {
+      const notes = new Notes([taggedNote('note.md', 'tag1', 'tag2')]);
+      expect(notes.allTags()).to.deep.equal(['tag1', 'tag2']);
+    })
+
+    test('Sorts tags alphabetically', () => {
+      const notes = new Notes([taggedNote('note.md', 'b', 'a')]);
+      expect(notes.allTags()).to.deep.equal(['a', 'b']);
+    })
+  })
 });
 
 function today(): Date {
@@ -204,6 +283,16 @@ function note(...pathSegments: string[]): Note {
   return {
     fileName: path.basename(relativePath),
     filePath: path.sep + relativePath,
-    fileRelativePath: relativePath
+    fileRelativePath: relativePath,
+    tags: []
+  }
+}
+
+function taggedNote(fileName: string, ...tags: string[]): Note {
+  return {
+    fileName: fileName,
+    filePath: path.sep + fileName,
+    fileRelativePath: fileName,
+    tags: tags
   }
 }

@@ -1,9 +1,6 @@
 const vscode = require('vscode');
-const fs = require('fs-extra');
 const path = require('path');
-const klaw = require('klaw');
 const {resolveHome} = require('./utils');
-const FrontMatterParser = require('./lib/FrontMatterParser')
 const Notes = require('./lib/Notes');
 const NoteStore = require('./lib/NoteStore');
 
@@ -31,11 +28,10 @@ class VSNotesTreeView  {
     if (node) {
       switch (node.type) {
         case 'rootTag':
-          this.tags = Promise.resolve(this._getTags(this.baseDir))
-          return this.tags;
+          return Promise.resolve(this._getAllTags())
         case 'tag':
-          return node.files;
-        case 'rootFile':
+          return Promise.resolve(this._getAllNotesTaggedWith(node.tag));
+        case 'rootDirectory':
           return Promise.resolve(this._getDirectoryContents());
         case 'note':
           return Promise.resolve([]);
@@ -46,7 +42,7 @@ class VSNotesTreeView  {
       const treeview = [];
       if (!this.hideFiles) {
         treeview.push({
-          type: 'rootFile'
+          type: 'rootDirectory'
         });
       }
       if (!this.hideTags) {
@@ -67,13 +63,13 @@ class VSNotesTreeView  {
           dark: path.join(__filename, '..', '..', 'media', 'dark', 'tag.svg')
         };
         return rootTagTreeItem;
-      case 'rootFile':
-        let rootFileTreeItem = new vscode.TreeItem('Files', vscode.TreeItemCollapsibleState.Expanded);
-        rootFileTreeItem.iconPath = {
+      case 'rootDirectory':
+        let rootDirectoryTreeItem = new vscode.TreeItem('Files', vscode.TreeItemCollapsibleState.Expanded);
+        rootDirectoryTreeItem.iconPath = {
           light: path.join(__filename, '..', '..', 'media', 'light', 'file-directory.svg'),
           dark: path.join(__filename, '..', '..', 'media', 'dark', 'file-directory.svg')
         };
-        return rootFileTreeItem;
+        return rootDirectoryTreeItem;
       case 'tag':
         let tagTreeItem = new vscode.TreeItem(node.tag, vscode.TreeItemCollapsibleState.Collapsed);
         tagTreeItem.iconPath = {
@@ -118,11 +114,21 @@ class VSNotesTreeView  {
           })
         })
 
-        notes.inDirectory(parentDirectory).get().forEach(note => {
+        notes.inDirectory(parentDirectory).get().forEach(note => items.push(this._asTreeItem(note)));
+        resolve(items);
+      })
+    })
+  }
+
+  _getAllTags () {
+    return new Promise ((resolve) => {
+      const items = [];
+      this.notes.then((notes) => {
+        notes.allTags().forEach(tag => {
           items.push({
-            label: note.fileName,
-            type: 'note',
-            note: note
+            label: tag,
+            type: 'tag',
+            tag: tag
           })
         })
         resolve(items);
@@ -130,72 +136,22 @@ class VSNotesTreeView  {
     })
   }
 
-  _getTags () {
-    return new Promise((resolve, reject) => {
-      let files = [];
+  _getAllNotesTaggedWith (tag) {
+    return new Promise ((resolve) => {
+      const items = [];
+      this.notes.then((notes) => {
+        notes.withTag(tag).get().forEach(note => items.push(this._asTreeItem(note)));
+        resolve(items);
+      });
+    })
+  }
 
-      klaw(this.baseDir)
-        .on('data', item => {
-          files.push(new Promise((res) => {
-            const fileName = path.basename(item.path);
-              if (!item.stats.isDirectory()) {
-              fs.readFile(item.path).then(contents => {
-                res({
-                  path: item.path,
-                  contents: contents,
-                  payload: {
-                    type: 'file',
-                    file: fileName,
-                    path: item.path,
-                    stats: item.stats
-                  }
-                });
-              }).catch(err => {
-                console.error(err);
-                res();
-              })
-            } else {
-              res();
-            }
-          }))
-        })
-        .on('error', (err, item) => {
-          reject(err)
-          console.error('Error while walking notes folder for tags: ', item, err);
-        })
-        .on('end', () => {
-          Promise.all(files).then(files => {
-
-            // Build a tag index first
-            let tagIndex = {};
-            for (let i = 0; i < files.length; i++) {
-              if (files[i] != null && files[i]) {
-                for (let tag of new FrontMatterParser(files[i]).tags) {
-                  if (tag in tagIndex) {
-                    tagIndex[tag].push(files[i].payload);
-                  } else {
-                    tagIndex[tag] = [files[i].payload];
-                  }
-                }
-              }
-            }
-            // Then build an array of tags
-            let tags = []
-            for (let tag of Object.keys(tagIndex)) {
-              tags.push({
-                type: 'tag',
-                tag: tag,
-                files: tagIndex[tag]
-              })
-            }
-            // Sort tags alphabetically
-            tags.sort(function(a,b) {return (a.tag > b.tag) ? 1 : ((b.tag > a.tag) ? -1 : 0);} );
-            resolve(tags);
-          }).catch(err => {
-            console.error(err)
-          })
-        })
-    });
+  _asTreeItem (note) {
+    return {
+      label: note.fileName,
+      type: 'note',
+      note: note
+    }
   }
 }
 
