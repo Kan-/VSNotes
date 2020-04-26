@@ -1,5 +1,7 @@
 # VS NOTES
 
+[![Build Status](https://dev.azure.com/selesi/vsnotes/_apis/build/status/jozefs.VSNotes%20(1)?branchName=master)](https://dev.azure.com/selesi/vsnotes/_build/latest?definitionId=2&branchName=master)
+
 VS Notes is a simple tool that takes care of the creation and management of plain text notes and harnesses the power of VS Code via the Command Palette.
 
 ![](https://github.com/patleeman/VSNotes/raw/master/img/vsnotes_commands.png)
