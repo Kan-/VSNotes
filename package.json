@@ -121,7 +121,10 @@
                     "description": "Number of recent files to show when running command `List Notes`."
                 },
                 "vsnotes.noteTitleConvertSpaces": {
-                    "type": ["string", "null"],
+                    "type": [
+                        "string",
+                        "null"
+                    ],
                     "default": "_",
                     "description": "Automatically convert blank spaces in title to character. To disable set to `null`."
                 },
@@ -297,6 +300,7 @@
         "eslint": "^4.19.1",
         "mocha": "^6.1.4",
         "tslint": "^5.19.0",
+        "tslint-no-unused-expression-chai": "^0.1.4",
         "typescript": "^3.8.3",
         "vscode-test": "^1.3.0"
     },

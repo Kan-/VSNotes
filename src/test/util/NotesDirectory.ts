@@ -34,7 +34,7 @@ export default class NotesDirectory {
     }
 
     const notePath = path.join(directoryPath, fileName);
-    fs.closeSync(fs.openSync(notePath, 'w'))
+    fs.closeSync(fs.openSync(notePath, 'w'));
     this.#notes.push(notePath);
   }
 
@@ -50,7 +50,7 @@ export default class NotesDirectory {
 
   clear() {
     if (fs.existsSync(this.#path)) {
-      fs.removeSync(this.#path)
+      fs.removeSync(this.#path);
       fs.mkdirSync(this.#path);
     }
     this.#notes = [];

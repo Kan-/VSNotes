@@ -16,7 +16,7 @@ class NoteStore {
   }
 
   all() { // TODO this should return/resolve Notes
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const promises = [];
       const that = this;
 

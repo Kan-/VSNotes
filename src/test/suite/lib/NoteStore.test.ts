@@ -24,7 +24,7 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: []
       }]);
-    })
+    });
   });
 
   test('Finds multiple notes', () => {
@@ -45,7 +45,7 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note2.md'),
         tags: []
       }]);
-    })
+    });
   });
 
   test('Finds a note in a subdirectory', () => {
@@ -59,20 +59,20 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('subdir/note.md'),
         tags: []
       }]);
-    })
+    });
   });
 
   test('Returns an empty list if the store is empty', () => {
     return store.all().then((notes: Note[]) => {
       expect(notes).to.be.empty;
-    })
+    });
   });
 
   test('Does not return directories', () => {
     notesDir.createDirectory('a-subdirectory');
     return store.all().then((notes: Note[]) => {
       expect(notes).to.be.empty;
-    })
+    });
   });
 
   test('Ignores files matching ignore pattern', () => {
@@ -89,7 +89,7 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: []
       }]);
-    })
+    });
   });
 
   test('Ignores multiple files matching multiple ignore patterns', () => {
@@ -107,7 +107,7 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: []
       }]);
-    })
+    });
   });
 
   test('Applies ignore pattern to relative file paths', () => {
@@ -117,7 +117,7 @@ suite('NoteStore', () => {
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([]);
-    })
+    });
   });
 
   test('Reads tags from a note', () => {
@@ -131,6 +131,6 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: ['tag1', 'tag2']
       }]);
-    })
+    });
   });
 });
