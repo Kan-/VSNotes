@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { expect } from 'chai';
 
 import NotesDirectory from '../../util/NotesDirectory';
@@ -53,8 +54,8 @@ suite('NoteStore', () => {
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
-        filePath: notesDir.pathOf('subdir/note.md'),
-        fileRelativePath: 'subdir/note.md',
+        filePath: notesDir.pathOf(path.join('subdir', 'note.md')),
+        fileRelativePath: path.join('subdir', 'note.md'),
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('subdir/note.md'),
         tags: []
