@@ -27,17 +27,24 @@ class Notes {
   }
 
   directories(...pathSegments) {
-    return this.notes
+    pathSegments = this._removeFalsyValuesFrom(pathSegments);
+    return [...new Set(this.notes
       .map(note => path.dirname(note.fileRelativePath))
       .map(dirname => dirname === '.' ? [] : dirname.split(path.sep))
       .filter(notePathSegments => notePathSegments.length > pathSegments.length)
+      .filter(notePathSegments => pathSegments.every((segment, index) => segment === notePathSegments[index]))
       .map(notePathSegments => notePathSegments.slice(pathSegments.length, pathSegments.length + 1))
-      .map(pathSegmentOrEmpty => pathSegmentOrEmpty.length === 0 ? '' : pathSegmentOrEmpty[0]);
+      .map(pathSegmentOrEmpty => pathSegmentOrEmpty.length === 0 ? '' : pathSegmentOrEmpty[0]))];
   }
 
   inDirectory(...pathSegments) {
+    pathSegments = this._removeFalsyValuesFrom(pathSegments);
     const subdirectory = path.join(...pathSegments);
     return new Notes(this.notes.filter(note => path.dirname(note.fileRelativePath) === subdirectory));
+  }
+
+  _removeFalsyValuesFrom(array) {
+    return array.filter(Boolean);
   }
 }
 

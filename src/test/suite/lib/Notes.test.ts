@@ -63,6 +63,16 @@ suite('Notes', () => {
       expect(notes.directories()).to.deep.equal(['dir']);
     })
 
+    test('Returns directories in the root of the store, one directory, when sending undefined', () => {
+      const notes = new Notes([note('dir', 'note.md')]);
+      expect(notes.directories(undefined)).to.deep.equal(['dir']);
+    })
+
+    test('Returns directories in the root of the store, one directory with multiple notes', () => {
+      const notes = new Notes([note('dir', 'note1.md'), note('dir', 'note2.md')]);
+      expect(notes.directories()).to.deep.equal(['dir']);
+    })
+
     test('Returns directories in the root of the store, multiple directories', () => {
       const notes = new Notes([note('dir1', 'note.md'), note('dir2', 'note.md')]);
       expect(notes.directories()).to.deep.equal(['dir1', 'dir2']);
@@ -73,8 +83,13 @@ suite('Notes', () => {
       expect(notes.directories()).to.deep.equal(['dir1', 'dir2']);
     })
 
-    test('Returns empty array if the requested directory does not exist', () => {
+    test('Returns empty array if the requested directory does not exist, no directories', () => {
       const notes = new Notes([]);
+      expect(notes.directories('non-existent')).to.be.empty;
+    })
+
+    test('Returns empty array if the requested directory does not exist, some directories', () => {
+      const notes = new Notes([note('dir1', 'note.md'), note('dir2', 'note.md')]);
       expect(notes.directories('non-existent')).to.be.empty;
     })
 
@@ -102,8 +117,13 @@ suite('Notes', () => {
     })
 
     test('Returns subdirectories of a subdirectory, one subdirectory', () => {
-      const notes = new Notes([note('parent', 'dir', 'note.md'), note('parent', 'dir', 'subdir', 'note.md')]);
-      expect(notes.directories('parent', 'dir')).to.deep.equal(['subdir']);
+      const notes = new Notes([note('parent1', 'dir1', 'note.md'), note('parent2', 'dir2', 'subdir', 'note.md')]);
+      expect(notes.directories('parent2', 'dir2')).to.deep.equal(['subdir']);
+    })
+
+    test('Returns subdirectories of a subdirectory, non existent subdirectory', () => {
+      const notes = new Notes([note('parent1', 'dir1', 'note.md'), note('parent2', 'dir2', 'subdir', 'note.md')]);
+      expect(notes.directories('non-existent')).to.be.empty;
     })
 
     test('Returns subdirectories of a subdirectory, multiple subdirectories', () => {
@@ -113,7 +133,9 @@ suite('Notes', () => {
         note('parent', 'dir', 'subdir2', 'note.md')]);
       expect(notes.directories('parent', 'dir')).to.deep.equal(['subdir1', 'subdir2']);
     })
+  })
 
+  suite('Getting notes in a directory', () => {
     test('Returns notes in the root of the store, no notes', () => {
       const notes = new Notes([]);
       expect(notes.inDirectory().get()).to.deep.equal([]);
@@ -122,6 +144,11 @@ suite('Notes', () => {
     test('Returns notes in the root of the store, one note', () => {
       const notes = new Notes([note('note.md')]);
       expect(notes.inDirectory().get()).to.deep.equal([note('note.md')]);
+    })
+
+    test('Returns notes in the root of the store, one note, when sending undefined', () => {
+      const notes = new Notes([note('note.md')]);
+      expect(notes.inDirectory(undefined).get()).to.deep.equal([note('note.md')]);
     })
 
     test('Returns notes in the root of the store, multiple notes', () => {
