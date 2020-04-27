@@ -24,7 +24,7 @@ class NoteStore {
         .on('data', item => {
           const fileName = path.basename(item.path);
           const fileRelativePath = path.relative(that.storePath, item.path);
-          if (item.stats.isDirectory() || that._matchesIgnorePattern(fileRelativePath)) {
+          if (item.stats.isDirectory() || item.stats.isSymbolicLink() || that._matchesIgnorePattern(fileRelativePath)) {
             return;
           }
 
@@ -37,10 +37,14 @@ class NoteStore {
                 fileLastModifiedAt: item.stats.mtime,
                 tags: new FrontMatterParser(content).tags
               });
-            }) // TODO hendle file read errors
+            }).catch((reason) => {
+              console.error('Unable to read note ' + item.path, reason);
+            })
           }))
         })
-        // TODO handle walk errors
+        .on('error', (error, item) => {
+          console.error('Unable to walk ' + item.path, error.message);
+        })
         .on('end', () => Promise.all(promises).then(notes => resolve(notes)));
     })
   }

@@ -11,7 +11,11 @@ suite('NoteStore', () => {
   let store = new NoteStore(notesDir.path());
 
   teardown(function() {
-    notesDir.clear();
+    notesDir.empty();
+  });
+
+  suiteTeardown(function() {
+    notesDir.remove();
   });
 
   test('Finds a note', () => {
@@ -132,6 +136,26 @@ suite('NoteStore', () => {
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: ['tag1', 'tag2']
       }]);
+    });
+  });
+
+  test('Reads content of the store when the store itself is a symlink to a directory', () => {
+    const symlinkedNotesDir = new NotesDirectory('symlinked-test-notes', { symlink: true });
+    const symlinkedStore = new NoteStore(symlinkedNotesDir.path());
+
+    symlinkedNotesDir.createNote('note.md', '---\ntags: [tag1, tag2]\n---');
+
+    return symlinkedStore.all().then((notes: Note[]) => {
+      expect(notes).to.deep.equal([{
+        filePath: symlinkedNotesDir.pathOf('note.md'),
+        fileRelativePath: 'note.md',
+        fileName: 'note.md',
+        fileLastModifiedAt: symlinkedNotesDir.lastModifiedOf('note.md'),
+        tags: ['tag1', 'tag2']
+      }]);
+    })
+    .finally(() => {
+      symlinkedNotesDir.remove();
     });
   });
 });
