@@ -5,45 +5,44 @@ interface CreationOptions {
   symlink: boolean;
 }
 
-export default class NotesDirectory {
+export default class TestDirectory {
   #path: string;
-  #notes: string[];
   #options: CreationOptions;
 
   constructor(path: string, options?: CreationOptions) {
     this.#path = path;
-    this.#notes = [];
     this.#options = options || { symlink: false };
 
     this.create();
   }
 
-  createNote(fileName: string, content?: string) {
-    const notePath = path.join(this.path(), fileName);
+  createFile(fileName: string, content?: string) {
+    const filePath = path.join(this.path(), fileName);
 
-    const handle = fs.openSync(notePath, 'w');
+    const handle = fs.openSync(filePath, 'w');
     if (content) {
       fs.writeFileSync(handle, content);
     }
     fs.closeSync(handle);
-
-    this.#notes.push(notePath);
   }
 
-  createNoteInDirectory(directory: string, fileName: string) {
+  createFileInDirectory(directory: string, fileName: string, content?: string) {
     const directoryPath = path.join(this.path(), directory);
     if (!fs.existsSync(directoryPath)) {
       fs.mkdirSync(directoryPath);
     }
 
-    const notePath = path.join(directoryPath, fileName);
-    fs.closeSync(fs.openSync(notePath, 'w'));
-    this.#notes.push(notePath);
+    const filePath = path.join(directoryPath, fileName);
+    const handle = fs.openSync(filePath, 'w');
+    if (content) {
+      fs.writeFileSync(handle, content);
+    }
+    fs.closeSync(handle);
   }
 
-  createNotes(fileNames: string[]) {
+  createFiles(fileNames: string[]) {
     for (const fileName of fileNames) {
-      this.createNote(fileName);
+      this.createFile(fileName);
     }
   }
 
@@ -81,8 +80,6 @@ export default class NotesDirectory {
     if (this.#options.symlink) {
       fs.removeSync(this.symlinkToStorePath());
     }
-
-    this.#notes = [];
   }
 
   private create() {

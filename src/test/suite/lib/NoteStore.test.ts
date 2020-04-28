@@ -1,13 +1,13 @@
 import * as path from 'path';
 import { expect } from 'chai';
 
-import NotesDirectory from '../../util/NotesDirectory';
+import TestDirectory from '../../util/NotesDirectory';
 import Note from '../../util/Note';
 const NoteStore = require('../../../lib/NoteStore');
 
 suite('NoteStore', () => {
 
-  const notesDir = new NotesDirectory('test-notes');
+  const notesDir = new TestDirectory('test-notes');
   let store = new NoteStore(notesDir.path());
 
   teardown(function() {
@@ -19,7 +19,7 @@ suite('NoteStore', () => {
   });
 
   test('Finds a note', () => {
-    notesDir.createNote('note.md');
+    notesDir.createFile('note.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -33,8 +33,8 @@ suite('NoteStore', () => {
   });
 
   test('Finds multiple notes', () => {
-    notesDir.createNote('note1.md');
-    notesDir.createNote('note2.md');
+    notesDir.createFile('note1.md');
+    notesDir.createFile('note2.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -54,7 +54,7 @@ suite('NoteStore', () => {
   });
 
   test('Finds a note in a subdirectory', () => {
-    notesDir.createNoteInDirectory('subdir', 'note.md');
+    notesDir.createFileInDirectory('subdir', 'note.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -83,8 +83,8 @@ suite('NoteStore', () => {
   test('Ignores files matching ignore pattern', () => {
     store = new NoteStore(notesDir.path(), [/^ignored.*/]);
 
-    notesDir.createNote('note.md');
-    notesDir.createNote('ignored-note.md');
+    notesDir.createFile('note.md');
+    notesDir.createFile('ignored-note.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -100,9 +100,9 @@ suite('NoteStore', () => {
   test('Ignores multiple files matching multiple ignore patterns', () => {
     store = new NoteStore(notesDir.path(), [/^ignored1.*/, /^ignored2.*/]);
 
-    notesDir.createNote('note.md');
-    notesDir.createNote('ignored1.md');
-    notesDir.createNote('ignored2.md');
+    notesDir.createFile('note.md');
+    notesDir.createFile('ignored1.md');
+    notesDir.createFile('ignored2.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -118,7 +118,7 @@ suite('NoteStore', () => {
   test('Applies ignore pattern to relative file paths', () => {
     store = new NoteStore(notesDir.path(), [/^subdir.*/]);
 
-    notesDir.createNoteInDirectory('subdir', 'note.md');
+    notesDir.createFileInDirectory('subdir', 'note.md');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([]);
@@ -126,7 +126,7 @@ suite('NoteStore', () => {
   });
 
   test('Reads tags from a note', () => {
-    notesDir.createNote('note.md', '---\ntags: [tag1, tag2]\n---');
+    notesDir.createFile('note.md', '---\ntags: [tag1, tag2]\n---');
 
     return store.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
@@ -140,10 +140,10 @@ suite('NoteStore', () => {
   });
 
   test('Reads content of the store when the store itself is a symlink to a directory', () => {
-    const symlinkedNotesDir = new NotesDirectory('symlinked-test-notes', { symlink: true });
+    const symlinkedNotesDir = new TestDirectory('symlinked-test-notes', { symlink: true });
     const symlinkedStore = new NoteStore(symlinkedNotesDir.path());
 
-    symlinkedNotesDir.createNote('note.md', '---\ntags: [tag1, tag2]\n---');
+    symlinkedNotesDir.createFile('note.md', '---\ntags: [tag1, tag2]\n---');
 
     return symlinkedStore.all().then((notes: Note[]) => {
       expect(notes).to.deep.equal([{
