@@ -3,20 +3,15 @@ import { expect } from 'chai';
 
 import TestDirectory from '../../util/NotesDirectory';
 import Note from '../../util/Note';
-const NoteStore = require('../../../lib/NoteStore');
+import NoteStore from '../../../src/lib/NoteStore';
 
 suite('NoteStore', () => {
-
   const notesDir = new TestDirectory('test-notes');
   let store = new NoteStore(notesDir.path());
 
-  teardown(function() {
-    notesDir.empty();
-  });
+  teardown(() => notesDir.empty());
 
-  suiteTeardown(function() {
-    notesDir.remove();
-  });
+  suiteTeardown(() => notesDir.remove());
 
   test('Finds a note', () => {
     notesDir.createFile('note.md');
@@ -27,7 +22,7 @@ suite('NoteStore', () => {
         fileRelativePath: 'note.md',
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
-        tags: []
+        tags: [],
       }]);
     });
   });
@@ -42,13 +37,13 @@ suite('NoteStore', () => {
         fileRelativePath: 'note1.md',
         fileName: 'note1.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note1.md'),
-        tags: []
+        tags: [],
       }, {
         filePath: notesDir.pathOf('note2.md'),
         fileRelativePath: 'note2.md',
         fileName: 'note2.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note2.md'),
-        tags: []
+        tags: [],
       }]);
     });
   });
@@ -62,21 +57,22 @@ suite('NoteStore', () => {
         fileRelativePath: path.join('subdir', 'note.md'),
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('subdir/note.md'),
-        tags: []
+        tags: [],
       }]);
     });
   });
 
+  // eslint-disable-next-line arrow-body-style
   test('Returns an empty list if the store is empty', () => {
     return store.all().then((notes: Note[]) => {
-      expect(notes).to.be.empty;
+      expect(notes).to.be.empty; // eslint-disable-line
     });
   });
 
   test('Does not return directories', () => {
     notesDir.createDirectory('a-subdirectory');
     return store.all().then((notes: Note[]) => {
-      expect(notes).to.be.empty;
+      expect(notes).to.be.empty; // eslint-disable-line
     });
   });
 
@@ -92,7 +88,7 @@ suite('NoteStore', () => {
         fileRelativePath: 'note.md',
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
-        tags: []
+        tags: [],
       }]);
     });
   });
@@ -110,7 +106,7 @@ suite('NoteStore', () => {
         fileRelativePath: 'note.md',
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
-        tags: []
+        tags: [],
       }]);
     });
   });
@@ -134,7 +130,7 @@ suite('NoteStore', () => {
         fileRelativePath: 'note.md',
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
-        tags: ['tag1', 'tag2']
+        tags: ['tag1', 'tag2'],
       }]);
     });
   });
@@ -151,10 +147,9 @@ suite('NoteStore', () => {
         fileRelativePath: 'note.md',
         fileName: 'note.md',
         fileLastModifiedAt: symlinkedNotesDir.lastModifiedOf('note.md'),
-        tags: ['tag1', 'tag2']
+        tags: ['tag1', 'tag2'],
       }]);
-    })
-    .finally(() => {
+    }).finally(() => {
       symlinkedNotesDir.remove();
     });
   });

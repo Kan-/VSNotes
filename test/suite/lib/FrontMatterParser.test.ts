@@ -1,18 +1,28 @@
 import * as assert from 'assert';
 
-const FrontMatterParser = require('../../../lib/FrontMatterParser');
+import FrontMatterParser from '../../../src/lib/FrontMatterParser';
+
+function stripIndent(strings: TemplateStringsArray): string {
+  const string = strings[0];
+  const match = string.match(/^[^\S\n]*(?=\S)/gm);
+  const indent = match && Math.min(...match.map((el) => el.length));
+  if (indent) {
+    const regexp = new RegExp(`^.{${indent}}`, 'gm');
+    return string.replace(regexp, '').trim();
+  }
+  return string[0].trim();
+}
 
 suite('FrontMatterParser', () => {
-
   test('Does not fail when content is empty', () => {
-    const content = ``;
-    const tags = new FrontMatterParser(content).tags;
+    const content = '';
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, []);
   });
 
   test('Does not fail when content does not start with a valid front matter', () => {
-    const content = `--`;
-    const tags = new FrontMatterParser(content).tags;
+    const content = '--';
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, []);
   });
 
@@ -23,7 +33,7 @@ suite('FrontMatterParser', () => {
       - tag
     ---
     `;
-    const tags = new FrontMatterParser(content).tags;
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, ['tag']);
   });
 
@@ -35,7 +45,7 @@ suite('FrontMatterParser', () => {
       - tag2
     ---
     `;
-    const tags = new FrontMatterParser(content).tags;
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, ['tag1', 'tag2']);
   });
 
@@ -46,7 +56,7 @@ suite('FrontMatterParser', () => {
       -
     ---
     `;
-    const tags = new FrontMatterParser(content).tags;
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, []);
   });
 
@@ -57,7 +67,7 @@ suite('FrontMatterParser', () => {
       - ' tag '
     ---
     `;
-    const tags = new FrontMatterParser(content).tags;
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, ['tag']);
   });
 
@@ -67,18 +77,7 @@ suite('FrontMatterParser', () => {
     tags: string
     ---
     `;
-    const tags = new FrontMatterParser(content).tags;
+    const { tags } = new FrontMatterParser(content);
     assert.deepEqual(tags, []);
   });
 });
-
-function stripIndent(strings: TemplateStringsArray) {
-  const string = strings[0];
-  const match = string.match(/^[^\S\n]*(?=\S)/gm);
-  const indent = match && Math.min(...match.map(el => el.length));
-  if (indent) {
-    const regexp = new RegExp(`^.{${indent}}`, 'gm');
-    return string.replace(regexp, '').trim();
-  }
-  return string[0].trim();
-}

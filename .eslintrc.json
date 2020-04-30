@@ -1,24 +1,19 @@
 {
-    "env": {
-        "browser": false,
-        "commonjs": true,
-        "es6": true,
-        "node": true
-    },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": 2017,
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "sourceType": "module"
+        "tsconfigRootDir": "./",
+        "project": ["./tsconfig.json"]
     },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "extends": [
+        "airbnb-typescript/base",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
     "rules": {
-        "no-const-assign": "warn",
-        "no-this-before-super": "warn",
-        "no-undef": "warn",
-        "no-unreachable": "warn",
-        "no-unused-vars": "warn",
-        "constructor-super": "warn",
-        "valid-typeof": "warn"
+        "no-console": "warn"
     }
 }

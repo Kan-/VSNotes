@@ -32,7 +32,7 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                "${workspaceRoot}/src/test/workspace"
+                "${workspaceRoot}/test/workspace"
             ],
             "stopOnEntry": false,
             "preLaunchTask": "npm: configureTestWorkspace",
@@ -48,8 +48,8 @@
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}",
-                "--extensionTestsPath=${workspaceRoot}/src/test",
-                "${workspaceRoot}/src/test/workspace"
+                "--extensionTestsPath=${workspaceRoot}/test",
+                "${workspaceRoot}/test/workspace"
             ],
             "stopOnEntry": false,
             "preLaunchTask": "npm: configureTestWorkspace",

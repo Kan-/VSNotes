@@ -1,25 +1,24 @@
 import * as path from 'path';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import TestDirectory from '../../util/NotesDirectory';
+import TemplateStore from '../../../src/lib/TemplateStore';
+
 chai.should();
 chai.use(chaiAsPromised);
-import { expect } from 'chai';
 
-import TestDirectory from '../../util/NotesDirectory';
-const TemplateStore = require('../../../lib/TemplateStore');
 
-suite('UserTemplateStore', () => {
-
+suite('TemplateStore', () => {
   const templateDir = new TestDirectory('templates');
   const templateFilePath = path.join(templateDir.path(), 'templates.json');
   const store = new TemplateStore(templateFilePath);
   templateDir.empty();
 
-  teardown(function() {
+  teardown(() => {
     templateDir.empty();
   });
 
-  suiteTeardown(function() {
+  suiteTeardown(() => {
     templateDir.remove();
   });
 
@@ -64,25 +63,25 @@ suite('UserTemplateStore', () => {
     test('Returns the specified template', async () => {
       templateDir.createDirectory('templates');
       templateDir.createFile('templates.json',
-        JSON.stringify({template: { body:['body'], description: 'description', default: true }}));
+        JSON.stringify({ template: { body: ['body'], description: 'description', default: true } }));
 
       await store.getTemplate('template').should.eventually.deep.equal({
         name: 'template',
-        body: 'body' ,
+        body: 'body',
         description: 'description',
-        default: true
+        default: true,
       });
     });
 
-    test('Returns the specified template, defaults description to null and default to false', async () => {
+    test('Returns the specified template, defaults description to undefined and default to false', async () => {
       templateDir.createDirectory('templates');
       templateDir.createFile('templates.json', '{"template":{"body":["templateBody"]}}');
 
       await store.getTemplate('template').should.eventually.deep.equal({
         name: 'template',
         body: 'templateBody',
-        description: null,
-        default: false
+        description: undefined,
+        default: false,
       });
     });
 
@@ -93,8 +92,8 @@ suite('UserTemplateStore', () => {
       await store.getTemplate('template').should.eventually.deep.equal({
         name: 'template',
         body: 'line1\nline2',
-        description: null,
-        default: false
+        description: undefined,
+        default: false,
       });
     });
   });
@@ -107,12 +106,17 @@ suite('UserTemplateStore', () => {
     test('Returns all templates', async () => {
       templateDir.createDirectory('templates');
       templateDir.createFile('templates.json',
-        JSON.stringify({template1: { body: ['line1', 'line2']}, template2: { body: ['line1', 'line2']}}));
+        JSON.stringify({
+          template1: { body: ['line1', 'line2'] },
+          template2: { body: ['line1', 'line2'] },
+        }));
 
-      await store.all().should.eventually.deep.equal([
-        { name: 'template1', body: 'line1\nline2', description: null, default: false },
-        { name: 'template2', body: 'line1\nline2', description: null, default: false },
-       ]);
+      await store.all().should.eventually.deep.equal([{
+        name: 'template1', body: 'line1\nline2', description: undefined, default: false,
+      }, {
+        name: 'template2', body: 'line1\nline2', description: undefined, default: false,
+      },
+      ]);
     });
   });
 });

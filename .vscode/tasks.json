@@ -27,7 +27,14 @@
 			"script": "configureTestWorkspace",
 			"problemMatcher": [],
 			"label": "npm: configureTestWorkspace",
-			"detail": "node ./src/test/set-workspace-settings.js"
+			"detail": "node ./test/set-workspace-settings.js"
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": ["$eslint-stylish"],
+			"label": "npm: lint",
+			"detail": "eslint -c .eslintrc.json --ext ts ./src"
 		}
 	]
 }

@@ -7,16 +7,17 @@ interface CreationOptions {
 
 export default class TestDirectory {
   #path: string;
+
   #options: CreationOptions;
 
-  constructor(path: string, options?: CreationOptions) {
-    this.#path = path;
+  constructor(directory: string, options?: CreationOptions) {
+    this.#path = directory;
     this.#options = options || { symlink: false };
 
     this.create();
   }
 
-  createFile(fileName: string, content?: string) {
+  createFile(fileName: string, content?: string): void {
     const filePath = path.join(this.path(), fileName);
 
     const handle = fs.openSync(filePath, 'w');
@@ -26,7 +27,7 @@ export default class TestDirectory {
     fs.closeSync(handle);
   }
 
-  createFileInDirectory(directory: string, fileName: string, content?: string) {
+  createFileInDirectory(directory: string, fileName: string, content?: string): void {
     const directoryPath = path.join(this.path(), directory);
     if (!fs.existsSync(directoryPath)) {
       fs.mkdirSync(directoryPath);
@@ -40,13 +41,11 @@ export default class TestDirectory {
     fs.closeSync(handle);
   }
 
-  createFiles(fileNames: string[]) {
-    for (const fileName of fileNames) {
-      this.createFile(fileName);
-    }
+  createFiles(fileNames: string[]): void {
+    fileNames.forEach((fileName) => this.createFile(fileName));
   }
 
-  createDirectory(dirName: string) {
+  createDirectory(dirName: string): void {
     fs.mkdirSync(path.join(this.path(), dirName));
   }
 
@@ -58,21 +57,21 @@ export default class TestDirectory {
     if (this.#options.symlink) {
       // We should expect the non-resolved symlink path.
       return path.join(path.resolve(path.join(this.path(), '..')), path.basename(this.path()), fileName);
-    } else {
-      return path.resolve(path.join(this.path(), fileName));
     }
+
+    return path.resolve(path.join(this.path(), fileName));
   }
 
   lastModifiedOf(fileName: string): Date {
     return fs.statSync(this.pathOf(fileName)).mtime;
   }
 
-  empty() {
+  empty(): void {
     this.remove();
     this.create();
   }
 
-  remove() {
+  remove(): void {
     if (fs.existsSync(this.#path)) {
       fs.removeSync(this.#path);
     }
@@ -82,17 +81,17 @@ export default class TestDirectory {
     }
   }
 
-  private create() {
+  private create(): void {
     if (!fs.existsSync(this.#path)) {
       fs.mkdirSync(this.#path);
     }
 
     if (this.#options?.symlink && !fs.existsSync(this.symlinkToStorePath())) {
-      fs.symlinkSync(this.#path, this.#path + '-symlink');
+      fs.symlinkSync(this.#path, `${this.#path}-symlink`);
     }
   }
 
-  private symlinkToStorePath() {
-    return this.#path + '-symlink';
+  private symlinkToStorePath(): string {
+    return `${this.#path}-symlink`;
   }
 }
