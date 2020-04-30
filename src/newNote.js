@@ -1,61 +1,63 @@
-
 const vscode = require('vscode');
 const fs = require('fs-extra');
 const path = require('path');
 const moment = require('moment');
 const {resolveHome} = require('./utils');
-
+const TemplateStore = require('./lib/TemplateStore');
 
 // This function handles creation of a new note in default note folder
-function newNote() {
+function newNote(workspaceFolder) {
   const config = vscode.workspace.getConfiguration('vsnotes');
-  const noteFolder = resolveHome(config.get('defaultNotePath'));
-  const templates = config.get('templates');
+  const defaultNoteFolder = resolveHome(config.get('defaultNotePath'));
+  const configuredTemplatesPath = resolveHome(config.get('templatesPath'));
+  const templateStore = new TemplateStore(configuredTemplatesPath || path.join(defaultNoteFolder, '.templates.json'));
+  const noteFolder = workspaceFolder || defaultNoteFolder;
 
+  templateStore.all().then((templates) => {
+    if (!templates.length) {
+      createNote({ noteFolder });
+      return;
+    }
 
-  if (!templates || !templates.length) {
-    createNote({ noteFolder });
-    return
-  }
+    const quickPickItems = templates.map(template => ({
+      label: template.name + (template.default ? '*' : ''),
+      description: template.description,
+      template: template
+    }));
 
-  vscode.window.showQuickPick (templates, {
-    placeHolder: 'Please select a template. Hit esc to use default.',
-  })
-  .then(template => {
-    console.log(template)
-    createNote({ noteFolder, template });
-  }, err => {
-    console.error(err);
-  })
+    vscode.window.showQuickPick (quickPickItems, {
+      placeHolder: 'Please select a template. Hit Esc to use default (*).',
+    })
+    .then(item => {
+      const template = item ? item.template : templates.find(template => template.default);
+      console.log(template);
+      createNote({ noteFolder, template: template });
+    }, err => {
+      console.error(err);
+    })
+  });
 }
 
 function newNoteInWorkspace() {
   const workspaces = vscode.workspace.workspaceFolders;
+
   if (workspaces == null || workspaces.length === 0) {
     vscode.window.showErrorMessage('No workspaces open.');
-    return
-  } else if (workspaces.length === 1) {
-    createNote({ noteFolder: workspaces[0].uri.fsPath });
-  } else {
-    const spaces = []
-    workspaces.forEach(workspace => {
-      spaces.push(workspace.name)
-    })
-
-    // Show dialog and ask which workspace to use.
-    vscode.window.showQuickPick(spaces).then(workspaceName => {
-      workspaces.every(workspace => {
-        if (workspace.name === workspaceName) {
-          const uri = workspace.uri
-          createNote({ noteFolder: uri.fsPath })
-          return false;
-        }
-        return true
-      })
-    })
+    return;
   }
-}
 
+  if (workspaces.length === 1) {
+    newNote(workspaces[0].uri.fsPath);
+    return;
+  }
+
+  const quickPickItems = workspaces.map(workspace => ({ label: workspace.name, workspace: workspace }));
+
+  // Show dialog and ask which workspace to use.
+  vscode.window.showQuickPick(quickPickItems).then(item => { // TODO can a user not select anything?
+    newNote(item.workspace.uri.fsPath);
+  })
+}
 
 async function createNote({ noteFolder, template }) {
   const config = vscode.workspace.getConfiguration('vsnotes');
@@ -65,9 +67,9 @@ async function createNote({ noteFolder, template }) {
   const noteTitleConvertToLowerCase = config.get('noteTitleConvertToLowerCase');
 
   const noteTitles = config.get('additionalNoteTitles');
-  let noteTitle = config.get('defaultNoteTitle');
+  let fileNameTemplate = config.get('defaultNoteTitle');
   if (noteTitles.length > 0) {
-    noteTitle = await vscode.window.showQuickPick([noteTitle, ...noteTitles], {
+    fileNameTemplate = await vscode.window.showQuickPick([fileNameTemplate, ...noteTitles], {
       placeHolder: 'Please select a note title format.'
     })
   }
@@ -80,7 +82,7 @@ async function createNote({ noteFolder, template }) {
 
   // Get the name for the note
   const inputBoxPromise = vscode.window.showInputBox({
-    prompt: `Note title? Current Format ${noteTitle}. Hit enter for instant note.`,
+    prompt: `Note title? Current Format ${fileNameTemplate}. Hit enter for instant note.`,
     value: "",
   })
 
@@ -95,17 +97,19 @@ async function createNote({ noteFolder, template }) {
       noteName = defaultNoteName
     }
 
-    const noteNameInFile = noteTitleConvertToLowerCase
-      ? noteName.toLocaleLowerCase()
-      : noteName;
-    let fileName = replaceTokens(noteTitle, noteNameInFile, tokens);
+    let [directory, title] = _split(noteName);
+    let fileName = replaceTokens(fileNameTemplate, title, tokens);
+
+    fileName = noteTitleConvertToLowerCase
+      ? fileName.toLocaleLowerCase()
+      : fileName;
 
     if (noteTitleConvertSpaces != null) {
       fileName = fileName.replace(/\s/g, noteTitleConvertSpaces);
     }
 
     // Create the file
-    const createFilePromise = createFile(noteFolder, fileName, '');
+    const createFilePromise = createFile(path.join(noteFolder, directory), fileName, '');
     createFilePromise.then(filePath => {
       if (typeof filePath !== 'string') {
         console.error('Invalid file path')
@@ -118,7 +122,7 @@ async function createNote({ noteFolder, template }) {
       }).then(() => {
         console.log('Note created successfully: ', filePath);
 
-        createTemplate({ template })
+        createTemplate({ template, title, tokens })
       })
     })
 
@@ -128,33 +132,25 @@ async function createNote({ noteFolder, template }) {
   })
 }
 
-function createTemplate({ template = null }) {
-  const config = vscode.workspace.getConfiguration('vsnotes');
+function createTemplate({ template = null, title = null, tokens = []}) {
+  if (template) {
+    const templateBody = replaceTokens(template.body, title, tokens);
 
-  if (template != null) {
-    vscode.commands.executeCommand('editor.action.insertSnippet', ...[{ langId: 'markdown', name: `vsnote_template_${template}` }]).then(res => {
-      vscode.window.showInformationMessage(`Note for "${template}" created!`);
-      console.log('template created: ', res)
-    }, err => {
-      vscode.window.showErrorMessage('Template creation error.');
-      console.error('template creation error: ', err)
-    })
-  } else {
-    // default template
-    const snippetLangId = config.get('defaultSnippet.langId');
-    const snippetName = config.get('defaultSnippet.name');
-
-    // Insert the default note text
-    if (snippetLangId != null && snippetName != null) {
-      vscode.commands.executeCommand('editor.action.insertSnippet', ...[{ langId: snippetLangId, name: snippetName }]).then(res => {
-        console.log(res)
-      }, err => {
-        console.error(err)
-      })
-    }
+    vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(templateBody)).then((inserted) => {
+      if (inserted) {
+        vscode.window.showInformationMessage(`Added a new ${template.name} note.`);
+      }
+    });
   }
 }
 
+function _split(noteNameWithOptionalPathPrefix) {
+  const splitTitle = noteNameWithOptionalPathPrefix.split(path.sep);
+
+  return splitTitle.length > 1
+    ? [splitTitle.slice(0, splitTitle.length - 1).join(path.sep), splitTitle[splitTitle.length - 1]]
+    : ['', noteNameWithOptionalPathPrefix];
+}
 
 // Create the given file if it doesn't exist
 function createFile (folderPath, fileName) {
@@ -172,36 +168,18 @@ function createFile (folderPath, fileName) {
   });
 }
 
-
-function replaceTokens (format, title, tokens) {
-  let newFormat = format
-  const pattern = /(?:\{)(.+?)(?:\})/g;
-  let result;
-  while ((result = pattern.exec(format)) != null) {
-    for (let token of tokens) {
-      if (token.token === result[0]) {
-        switch (token.type) {
-          case "datetime":
-            newFormat = newFormat.replace(new RegExp(result[0], 'g'), moment().format(token.format));
-            break;
-          case "title":
-            let prependedPath = [];
-            // Check if its a nested path
-            const splitTitle = title.split(path.sep);
-            if (splitTitle.length > 1) {
-              title = splitTitle[splitTitle.length - 1];
-              prependedPath = splitTitle.slice(0,splitTitle.length - 1);
-            }
-            newFormat = prependedPath.concat(newFormat.replace(new RegExp(token.token, 'g'), title)).join(path.sep);
-            break;
-          case "extension":
-            newFormat = newFormat.replace(new RegExp(token.token, 'g'), token.format)
-            break;
-        }
-      }
+function replaceTokens (stringWithTokens, title, tokens) {
+  let result = stringWithTokens;
+  for (let token of tokens) {
+    let replacement = '';
+    switch (token.type) {
+      case 'datetime':  replacement = moment().format(token.format); break;
+      case 'title':     replacement = title; break;
+      case 'extension': replacement = token.format; break;
     }
+    result = result.replace(new RegExp(`${token.token}`, 'g'), replacement);
   }
-  return newFormat;
+  return result;
 }
 
 module.exports = {

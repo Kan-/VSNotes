@@ -1,0 +1,26 @@
+{
+  "simple": {
+    "body": [
+      "---",
+      "title: {title}",
+      "tags: [simple]",
+      "---",
+      "$0"
+    ],
+    "description": "A simple template."
+  },
+  "note": {
+    "default": true,
+    "body": [
+      "---",
+      "created: {timestamp-iso}",
+      "tags:",
+      "  - $1",
+      "---",
+      "# {title}",
+      "",
+      "$0"
+    ],
+    "description": "Other template, with variables. This is the default."
+  }
+}

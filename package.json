@@ -133,31 +133,10 @@
                     "default": false,
                     "description": "Automatically convert title to lower case."
                 },
-                "vsnotes.templates": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": [],
-                    "description": "A list of markdown templates to choose from when creating a new note."
-                },
-                "vsnotes.defaultSnippet": {
-                    "type": "object",
-                    "properties": {
-                        "langId": {
-                            "type": "string",
-                            "description": "VS Code language identifier"
-                        },
-                        "name": {
-                            "type": "string",
-                            "description": "Snippet Name"
-                        }
-                    },
-                    "default": {
-                        "langId": "markdown",
-                        "name": "vsnote_template_default"
-                    },
-                    "description": "Default vscode snippet to execute after creating a note. Set both langId and name to null to disable."
+                "vsnotes.templatesPath": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Path of the templates JSON file. If not set, `.templates.json` will be used in the root of the notes directory (`defaultNotesPath`)."
                 },
                 "vsnotes.ignorePatterns": {
                     "type": "array",
