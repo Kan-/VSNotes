@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { expect } from 'chai';
 
-import TestDirectory from '../../util/NotesDirectory';
-import Note from '../../util/Note';
-import NoteStore from '../../../src/lib/NoteStore';
+import TestDirectory from '../../util/notesDirectory';
+import Note from '../../util/note';
+import NoteStore from '../../../src/lib/noteStore';
 
 suite('NoteStore', () => {
   const notesDir = new TestDirectory('test-notes');

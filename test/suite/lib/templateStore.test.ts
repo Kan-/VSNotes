@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import TestDirectory from '../../util/NotesDirectory';
-import TemplateStore from '../../../src/lib/TemplateStore';
+import TestDirectory from '../../util/notesDirectory';
+import TemplateStore from '../../../src/lib/templateStore';
 
 chai.should();
 chai.use(chaiAsPromised);

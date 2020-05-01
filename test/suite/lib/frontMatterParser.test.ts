@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import FrontMatterParser from '../../../src/lib/FrontMatterParser';
+import FrontMatterParser from '../../../src/lib/frontMatterParser';
 
 function stripIndent(strings: TemplateStringsArray): string {
   const string = strings[0];

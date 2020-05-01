@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import * as path from 'path';
 
-import Note from '../../../src/lib/Note';
-import Notes from '../../../src/lib/Notes';
+import Note from '../../../src/lib/note';
+import Notes from '../../../src/lib/notes';
 import { TODAY, YESTERDAY } from '../util';
 
 interface NoteMetadata {

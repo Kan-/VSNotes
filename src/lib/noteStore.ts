@@ -1,5 +1,5 @@
-import FrontMatterParser from './FrontMatterParser';
-import Note from './Note';
+import FrontMatterParser from './frontMatterParser';
+import Note from './note';
 
 import fs = require('fs-extra');
 import klaw = require('klaw');

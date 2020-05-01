@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import Template from './lib/Template';
-import TemplateStore from './lib/TemplateStore';
+import Template from './lib/template';
+import TemplateStore from './lib/templateStore';
 import { resolveHome } from './utils';
 import createNote from './lib/newNoteUtil';
 

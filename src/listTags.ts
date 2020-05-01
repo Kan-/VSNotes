@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { resolveHome } from './utils';
-import Note from './lib/Note';
-import Notes from './lib/Notes';
-import NoteStore from './lib/NoteStore';
+import Note from './lib/note';
+import Notes from './lib/notes';
+import NoteStore from './lib/noteStore';
 
 interface NoteQuickPickItem extends vscode.QuickPickItem {
   note: Note;
