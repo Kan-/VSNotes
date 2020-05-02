@@ -1,6 +1,5 @@
+import * as path from 'path';
 import Note from './note';
-
-import path = require('path');
 
 export default class Notes {
   #notes: Note[];

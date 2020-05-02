@@ -44,7 +44,7 @@ export default class TemplateStore {
         return [];
       }
 
-      const templates: Template[] = result.value.map((template) => ({
+      const templates: Template[] = result.value.map((template: ConfigFileTemplate) => ({
         name: template.name,
         description: template.description,
         body: template.body.join('\n'),

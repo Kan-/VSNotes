@@ -23,7 +23,8 @@
                 "<node_internals>/**"
             ],
             "type": "pwa-node",
-            "outputCapture": "std"
+            "outputCapture": "std",
+            "preLaunchTask": "npm: test-compile"
         },
         {
             "name": "Extension",
@@ -35,9 +36,9 @@
                 "${workspaceRoot}/test/workspace"
             ],
             "stopOnEntry": false,
-            "preLaunchTask": "npm: configureTestWorkspace",
+            "preLaunchTask": "npm: webpack",
             "outFiles": [
-                "${workspaceFolder}/out/**/*.js",
+                "${workspaceFolder}/dist/**/*.js",
                 "!**/node_modules/**"
             ],
         },
@@ -54,7 +55,7 @@
             "stopOnEntry": false,
             "preLaunchTask": "npm: configureTestWorkspace",
             "outFiles": [
-                "${workspaceFolder}/out/**/*.js",
+                "${workspaceFolder}/dist/**/*.js",
                 "!**/node_modules/**"
             ],
         }

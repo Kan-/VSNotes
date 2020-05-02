@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
-import * as moment from 'moment';
+// eslint-disable-next-line
+import * as moment from 'moment/moment.js';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import Template from './template';

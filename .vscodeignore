@@ -1,5 +1,8 @@
 .vscode/**
 .vscode-test/**
+node_modules/**
+out/**
+src/**
 test/**
 .gitignore
 jsconfig.json

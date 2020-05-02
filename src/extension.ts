@@ -4,11 +4,11 @@ import listNotes from './listNotes';
 import TreeDataProvider from './treeView';
 import listTags from './listTags';
 
-import setupNotes = require('./setupNotes');
-import commitPush = require('./commitPush');
-import pull = require('./pull');
-import search = require('./search');
-import utils = require('./utils');
+import * as setupNotes from './setupNotes';
+import * as commitPush from './commitPush';
+import * as pull from './pull';
+import * as search from './search';
+import * as utils from './utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

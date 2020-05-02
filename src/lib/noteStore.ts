@@ -1,10 +1,9 @@
+import * as fs from 'fs-extra';
+import * as klaw from 'klaw';
+import * as path from 'path';
 import FrontMatterParser from './frontMatterParser';
 import TitleParser from './titleParser';
 import Note from './note';
-
-import fs = require('fs-extra');
-import klaw = require('klaw');
-import path = require('path');
 
 export default class NoteStore {
   #storePath: string;

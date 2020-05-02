@@ -23,8 +23,8 @@ interface DirectoryTreeItem extends TreeItem {
 
 function icon(fileName: string): object {
   return {
-    light: path.join(__filename, '..', '..', '..', 'media', 'light', fileName),
-    dark: path.join(__filename, '..', '..', '..', 'media', 'dark', fileName),
+    light: path.join(__dirname, '..', 'media', 'light', fileName),
+    dark: path.join(__dirname, '..', 'media', 'dark', fileName),
   };
 }
 
