@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import Note from '../../../src/lib/note';
 import Notes from '../../../src/lib/notes';
-import { TODAY, YESTERDAY } from '../util';
+import { TODAY, YESTERDAY } from '../../util/util';
 
 interface NoteMetadata {
   fileLastModifiedAt?: Date;

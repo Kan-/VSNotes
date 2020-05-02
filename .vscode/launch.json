@@ -9,7 +9,7 @@
                 "--timeout",
                 "999999",
                 "--colors",
-                "${workspaceFolder}/out/test/suite/lib"
+                "${workspaceFolder}/out/test/unit/**/*.test.js"
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "name": "Unit Tests",

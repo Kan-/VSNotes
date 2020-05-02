@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import FrontMatterParser from '../../../src/lib/frontMatterParser';
-import { stripIndent } from '../util';
+import { stripIndent } from '../../util/util';
 
 suite('FrontMatterParser', () => {
   test('Does not fail when content is empty', () => {
