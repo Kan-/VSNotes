@@ -21,6 +21,7 @@ export default class TemplateStore {
 
     const data = await fs.readFile(this.#templateFilePath, 'utf8');
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const templateMap: any = JSON.parse(data);
 
       const templates: Template[] = Object.keys(templateMap)
@@ -48,6 +49,7 @@ export default class TemplateStore {
     return template;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private hasValidBody(name: string, templateFromFile: any): boolean {
     if (!templateFromFile.body || !Array.isArray(templateFromFile.body)) {
       console.error(`Template "${name}" is invalid in ${this.#templateFilePath}.`);

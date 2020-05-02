@@ -17,6 +17,7 @@ function toQuickPickItems(note: Note): NoteQuickPickItem {
   };
 }
 
+// eslint-disable-next-line
 export default function (...args: any[]): any {
   const config = vscode.workspace.getConfiguration('vsnotes');
   const noteFolder: string = resolveHome(config.get('defaultNotePath'));

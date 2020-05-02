@@ -15,6 +15,7 @@ function toQuickPickItems(note: Note): NoteQuickPickItem {
   };
 }
 
+// eslint-disable-next-line
 export default function (...any: any[]): any {
   const config = vscode.workspace.getConfiguration('vsnotes');
   const ignorePatterns: RegExp[] = (config.get<string[]>('ignorePatterns') ?? [])
