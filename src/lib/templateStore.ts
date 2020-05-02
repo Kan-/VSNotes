@@ -1,5 +1,22 @@
 import * as fs from 'fs-extra';
+import { JsonDecoder, Result } from 'ts.data.json';
 import Template from './template';
+
+interface ConfigFileTemplate {
+  name: string;
+  body: string[];
+  description?: string;
+  default?: boolean;
+}
+
+const configDecoder = JsonDecoder.array<ConfigFileTemplate>(
+  JsonDecoder.object<ConfigFileTemplate>({
+    name: JsonDecoder.string,
+    body: JsonDecoder.array(JsonDecoder.string, 'body'),
+    description: JsonDecoder.optional(JsonDecoder.string),
+    default: JsonDecoder.optional(JsonDecoder.boolean),
+  }, 'template'), 'template array',
+);
 
 /**
  * As there is no API currently to read snippets programmatically, we're using a custom template
@@ -20,18 +37,19 @@ export default class TemplateStore {
     }
 
     const data = await fs.readFile(this.#templateFilePath, 'utf8');
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const templateMap: any = JSON.parse(data);
 
-      const templates: Template[] = Object.keys(templateMap)
-        .filter((name) => this.hasValidBody(name, templateMap[name]))
-        .map((name) => ({
-          name,
-          description: templateMap[name].description,
-          body: templateMap[name].body.join('\n'),
-          default: templateMap[name].default || false,
-        }));
+    try {
+      const result: Result<ConfigFileTemplate[]> = configDecoder.decode(JSON.parse(data));
+      if (!result.isOk()) {
+        return [];
+      }
+
+      const templates: Template[] = result.value.map((template) => ({
+        name: template.name,
+        description: template.description,
+        body: template.body.join('\n'),
+        default: template.default || false,
+      }));
 
       return templates;
     } catch (e) {
@@ -47,14 +65,5 @@ export default class TemplateStore {
       throw new Error(`Template "${name}" not found in ${this.#templateFilePath}.`);
     }
     return template;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private hasValidBody(name: string, templateFromFile: any): boolean {
-    if (!templateFromFile.body || !Array.isArray(templateFromFile.body)) {
-      console.error(`Template "${name}" is invalid in ${this.#templateFilePath}.`);
-      return false;
-    }
-    return true;
   }
 }

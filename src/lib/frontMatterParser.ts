@@ -1,4 +1,20 @@
-import matter = require('gray-matter');
+import * as matter from 'gray-matter';
+import { JsonDecoder, Result } from 'ts.data.json';
+
+interface FrontMatter {
+  data: FrontMatterTags;
+}
+
+interface FrontMatterTags {
+  tags: string[];
+}
+
+const frontMatterDecoder = JsonDecoder.object<FrontMatter>({
+  data: JsonDecoder.object<FrontMatterTags>({
+    tags: JsonDecoder.array(JsonDecoder.string, 'tags'),
+  }, 'tags'),
+},
+'FrontMatter');
 
 export default class FrontMatterParser {
   tags: string[] = [];
@@ -8,13 +24,10 @@ export default class FrontMatterParser {
   }
 
   private parse(content: string): void {
-    try {
-      const file = matter(content);
-      if (file.data && file.data.tags && Array.isArray(file.data.tags)) {
-        this.tags = file.data.tags.filter((tag) => tag != null).map((tag) => tag.trim());
-      }
-    } catch (e) {
-      console.error(e);
+    const result: Result<FrontMatter> = frontMatterDecoder.decode(matter(content));
+    if (!result.isOk()) {
+      return;
     }
+    this.tags = result.value.data.tags.filter((tag) => tag != null).map((tag) => tag.trim());
   }
 }

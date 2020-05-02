@@ -298,6 +298,7 @@
         "fs-extra": "9.0.0",
         "gray-matter": "4.0.2",
         "klaw": "3.0.0",
-        "moment": "2.25.1"
+        "moment": "2.25.1",
+        "ts.data.json": "^1.1.0"
     }
 }
