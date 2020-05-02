@@ -4,4 +4,5 @@ export default interface Note {
   fileName: string;
   fileLastModifiedAt: Date;
   tags: string[];
+  title?: string;
 }

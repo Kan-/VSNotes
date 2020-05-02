@@ -29,7 +29,8 @@ export default class Notes {
     }));
   }
 
-  directories(...pathSegments: string[]): string[] {
+  directories(parentDirectory?: string): string[] {
+    const pathSegments: string[] = parentDirectory?.split(path.sep) || [];
     return [...new Set(this.#notes
       .map((note) => path.dirname(note.fileRelativePath))
       .map((dirname) => (dirname === '.' ? [] : dirname.split(path.sep)))
@@ -41,8 +42,7 @@ export default class Notes {
       .map((pathSegmentOrEmpty) => (pathSegmentOrEmpty.length === 0 ? '' : pathSegmentOrEmpty[0])))];
   }
 
-  inDirectory(...pathSegments: string[]): Notes {
-    const subdirectory = path.join(...pathSegments);
+  inDirectory(subdirectory = '.'): Notes {
     return new Notes(this.#notes
       .filter((note) => path.dirname(note.fileRelativePath) === subdirectory));
   }

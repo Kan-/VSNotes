@@ -23,6 +23,7 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: [],
+        title: undefined,
       }]);
     });
   });
@@ -38,12 +39,14 @@ suite('NoteStore', () => {
         fileName: 'note1.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note1.md'),
         tags: [],
+        title: undefined,
       }, {
         filePath: notesDir.pathOf('note2.md'),
         fileRelativePath: 'note2.md',
         fileName: 'note2.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note2.md'),
         tags: [],
+        title: undefined,
       }]);
     });
   });
@@ -58,6 +61,7 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('subdir/note.md'),
         tags: [],
+        title: undefined,
       }]);
     });
   });
@@ -89,6 +93,7 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: [],
+        title: undefined,
       }]);
     });
   });
@@ -107,6 +112,7 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: [],
+        title: undefined,
       }]);
     });
   });
@@ -131,6 +137,22 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
         tags: ['tag1', 'tag2'],
+        title: undefined,
+      }]);
+    });
+  });
+
+  test('Reads title from a note', () => {
+    notesDir.createFile('note.md', '# title');
+
+    return store.all().then((notes: Note[]) => {
+      expect(notes).to.deep.equal([{
+        filePath: notesDir.pathOf('note.md'),
+        fileRelativePath: 'note.md',
+        fileName: 'note.md',
+        fileLastModifiedAt: notesDir.lastModifiedOf('note.md'),
+        tags: [],
+        title: 'title',
       }]);
     });
   });
@@ -148,6 +170,7 @@ suite('NoteStore', () => {
         fileName: 'note.md',
         fileLastModifiedAt: symlinkedNotesDir.lastModifiedOf('note.md'),
         tags: ['tag1', 'tag2'],
+        title: undefined,
       }]);
     }).finally(() => {
       symlinkedNotesDir.remove();

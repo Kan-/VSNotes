@@ -1,4 +1,5 @@
 import FrontMatterParser from './frontMatterParser';
+import TitleParser from './titleParser';
 import Note from './note';
 
 import fs = require('fs-extra');
@@ -37,6 +38,7 @@ export default class NoteStore {
                 fileName,
                 fileLastModifiedAt: item.stats.mtime,
                 tags: new FrontMatterParser(content.toString()).tags,
+                title: new TitleParser(content.toString()).title,
               });
             }).catch((reason) => {
               console.error(`Unable to read note ${item.path}`, reason);

@@ -11,7 +11,8 @@ interface NoteQuickPickItem extends vscode.QuickPickItem {
 
 function toQuickPickItems(note: Note): NoteQuickPickItem {
   return {
-    label: note.fileRelativePath,
+    label: note.title ?? note.fileRelativePath,
+    description: note.title ? note.fileRelativePath : undefined,
     note,
   };
 }

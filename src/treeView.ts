@@ -68,7 +68,7 @@ function asDirectoryTreeItem(directory: string, parentDirectory: string): Direct
 
 function asNoteTreeItem(note: Note): NoteTreeItem {
   return {
-    label: note.fileName,
+    label: note.title ?? note.fileName,
     type: 'note',
     note,
     iconPath: icon('file.svg'),
@@ -147,12 +147,12 @@ implements vscode.TreeDataProvider<TreeItem> {
     return item;
   }
 
-  private getDirectoryContents(parentDirectory = ''): Promise<TreeItem[]> {
+  private getDirectoryContents(parentDirectory?: string): Promise<TreeItem[]> {
     return new Promise((resolve) => {
       const items: TreeItem[] = [];
       this.#notes.then((notes) => {
         notes.directories(parentDirectory).forEach((directory) => {
-          items.push(asDirectoryTreeItem(directory, parentDirectory));
+          items.push(asDirectoryTreeItem(directory, parentDirectory ?? ''));
         });
 
         notes.inDirectory(parentDirectory).get()

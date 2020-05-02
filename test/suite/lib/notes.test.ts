@@ -144,14 +144,14 @@ suite('Notes', () => {
 
     test('Returns subdirectories of a subdirectory, no subdirectories', () => {
       const notes = new Notes([note(path.join('parent', 'dir', 'note.md'))]);
-      expect(notes.directories('parent', 'dir')).to.deep.equal([]);
+      expect(notes.directories(path.join('parent', 'dir'))).to.deep.equal([]);
     });
 
     test('Returns subdirectories of a subdirectory, one subdirectory', () => {
       const notes = new Notes([
         note(path.join('parent1', 'dir1', 'note.md')),
         note(path.join('parent2', 'dir2', 'subdir', 'note.md'))]);
-      expect(notes.directories('parent2', 'dir2')).to.deep.equal(['subdir']);
+      expect(notes.directories(path.join('parent2', 'dir2'))).to.deep.equal(['subdir']);
     });
 
     test('Returns subdirectories of a subdirectory, non existent subdirectory', () => {
@@ -167,7 +167,7 @@ suite('Notes', () => {
         note(path.join('parent', 'dir', 'note.md')),
         note(path.join('parent', 'dir', 'subdir1', 'note.md')),
         note(path.join('parent', 'dir', 'subdir2', 'note.md'))]);
-      expect(notes.directories('parent', 'dir')).to.deep.equal(['subdir1', 'subdir2']);
+      expect(notes.directories(path.join('parent', 'dir'))).to.deep.equal(['subdir1', 'subdir2']);
     });
   });
 
@@ -210,7 +210,7 @@ suite('Notes', () => {
 
     test('Returns notes in a subdirectory of a subdirectory, one note', () => {
       const notes = new Notes([note(path.join('parent', 'subdir', 'note.md'))]);
-      expect(notes.inDirectory('parent', 'subdir').get()).to.deep.equal([
+      expect(notes.inDirectory(path.join('parent', 'subdir')).get()).to.deep.equal([
         note(path.join('parent', 'subdir', 'note.md'))]);
     });
 
@@ -219,7 +219,7 @@ suite('Notes', () => {
         note(path.join('parent', 'subdir', 'note1.md')),
         note(path.join('parent', 'subdir', 'note2.md'))]);
 
-      expect(notes.inDirectory('parent', 'subdir').get()).to.deep.equal([
+      expect(notes.inDirectory(path.join('parent', 'subdir')).get()).to.deep.equal([
         note(path.join('parent', 'subdir', 'note1.md')),
         note(path.join('parent', 'subdir', 'note2.md'))]);
     });
