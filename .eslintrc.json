@@ -14,6 +14,6 @@
         "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "rules": {
-        "no-console": "warn"
+        "no-console": "off"
     }
 }
